@@ -15,8 +15,17 @@
 
    ***************************************************************************************************************    
 
+
+Revision History
+
+  1.0.2016100301
+    Added PIN_ACTIVE_STATE and PIN_INACTIVE_STATE settings in antenna_array_controller_settings.h
+
+
 */
 
+
+#define CODE_VERSION "1.0.2016100301"
 
 #include <avr/pgmspace.h>
 #include <EEPROM.h>
@@ -39,8 +48,6 @@
 #error "You need to activate FEATURE_YAESU_EMULATION or FEATURE_EASYCOM_EMULATION"
 #endif
 
-
-#define CODE_VERSION "0.1.2014060701-UNSTABLE"
 
 #ifdef FEATURE_REMOTE_UNIT_INTERFACE
 HardwareSerial * remote_unit_port;
@@ -575,7 +582,7 @@ void check_serial(){
                 pin_value = ((serial0_buffer[2]-48)*10) + (serial0_buffer[3]-48);
               }
               pinModeEnhanced(pin_value,OUTPUT);
-              digitalWriteEnhanced(pin_value,HIGH);
+              digitalWriteEnhanced(pin_value,PIN_ACTIVE_STATE);
               Serial.println("OK");                          
             } else {
               Serial.println(F("Error"));  
@@ -590,7 +597,7 @@ void check_serial(){
                 pin_value = ((serial0_buffer[2]-48)*10) + (serial0_buffer[3]-48);
               }
               pinModeEnhanced(pin_value,OUTPUT);
-              digitalWriteEnhanced(pin_value,LOW);
+              digitalWriteEnhanced(pin_value,PIN_INACTIVE_STATE);
               Serial.println("OK");                          
             } else {
               Serial.println(F("Error"));  
@@ -1162,7 +1169,7 @@ void initialize_pins(){
   
   for (int x = 0; x < number_of_positions; x++){
     pinModeEnhanced(pins[x], OUTPUT);
-    digitalWriteEnhanced(pins[x], LOW);
+    digitalWriteEnhanced(pins[x], PIN_INACTIVE_STATE);
   }
   
   #ifdef FEATURE_ROTARY_ENCODER_CONTROL
@@ -1174,10 +1181,10 @@ void initialize_pins(){
   #endif //OPTION_ENCODER_ENABLE_PULLUPS
   #endif //FEATURE_ROTARY_ENCODER_CONTROL  
 
-  if (binary_output_bit_0) {pinModeEnhanced(binary_output_bit_0,OUTPUT); digitalWriteEnhanced(binary_output_bit_0,LOW);}
-  if (binary_output_bit_1) {pinModeEnhanced(binary_output_bit_1,OUTPUT); digitalWriteEnhanced(binary_output_bit_1,LOW);}
-  if (binary_output_bit_2) {pinModeEnhanced(binary_output_bit_2,OUTPUT); digitalWriteEnhanced(binary_output_bit_2,LOW);}
-  if (binary_output_bit_3) {pinModeEnhanced(binary_output_bit_3,OUTPUT); digitalWriteEnhanced(binary_output_bit_3,LOW);}
+  if (binary_output_bit_0) {pinModeEnhanced(binary_output_bit_0,OUTPUT); digitalWriteEnhanced(binary_output_bit_0,PIN_INACTIVE_STATE);}
+  if (binary_output_bit_1) {pinModeEnhanced(binary_output_bit_1,OUTPUT); digitalWriteEnhanced(binary_output_bit_1,PIN_INACTIVE_STATE);}
+  if (binary_output_bit_2) {pinModeEnhanced(binary_output_bit_2,OUTPUT); digitalWriteEnhanced(binary_output_bit_2,PIN_INACTIVE_STATE);}
+  if (binary_output_bit_3) {pinModeEnhanced(binary_output_bit_3,OUTPUT); digitalWriteEnhanced(binary_output_bit_3,PIN_INACTIVE_STATE);}
 
   submit_request(AZ, REQUEST_AZIMUTH, configuration.last_azimuth);
 }  
@@ -1388,14 +1395,14 @@ void change_antenna_position(int new_position){
 
   for (int x = 1;x <= number_of_positions;x++){
     if (x == new_position){
-      digitalWriteEnhanced(pins[x-1],HIGH);
+      digitalWriteEnhanced(pins[x-1],PIN_ACTIVE_STATE);
       #ifdef DEBUG_ANTENNA_POSITION
       Serial.print("[");
       Serial.print(x);
       Serial.print("]");
       #endif //DEBUG_ANTENNA_POSITION
     } else {
-      digitalWriteEnhanced(pins[x-1],LOW);
+      digitalWriteEnhanced(pins[x-1],PIN_INACTIVE_STATE);
       #ifdef DEBUG_ANTENNA_POSITION
       Serial.print(x);
       #endif //DEBUG_ANTENNA_POSITION      
@@ -1405,10 +1412,10 @@ void change_antenna_position(int new_position){
     #endif //DEBUG_ANTENNA_POSITION
   }
 
-  if ((new_position & B0001) && (binary_output_bit_0)) {digitalWriteEnhanced(binary_output_bit_0,HIGH);} else {digitalWriteEnhanced(binary_output_bit_0, LOW);}
-  if ((new_position & B0010) && (binary_output_bit_1)) {digitalWriteEnhanced(binary_output_bit_1,HIGH);} else {digitalWriteEnhanced(binary_output_bit_1, LOW);}
-  if ((new_position & B0100) && (binary_output_bit_2)) {digitalWriteEnhanced(binary_output_bit_2,HIGH);} else {digitalWriteEnhanced(binary_output_bit_2, LOW);}
-  if ((new_position & B1000) && (binary_output_bit_3)) {digitalWriteEnhanced(binary_output_bit_3,HIGH);} else {digitalWriteEnhanced(binary_output_bit_3, LOW);}
+  if ((new_position & B0001) && (binary_output_bit_0)) {digitalWriteEnhanced(binary_output_bit_0,PIN_ACTIVE_STATE);} else {digitalWriteEnhanced(binary_output_bit_0, PIN_INACTIVE_STATE);}
+  if ((new_position & B0010) && (binary_output_bit_1)) {digitalWriteEnhanced(binary_output_bit_1,PIN_ACTIVE_STATE);} else {digitalWriteEnhanced(binary_output_bit_1, PIN_INACTIVE_STATE);}
+  if ((new_position & B0100) && (binary_output_bit_2)) {digitalWriteEnhanced(binary_output_bit_2,PIN_ACTIVE_STATE);} else {digitalWriteEnhanced(binary_output_bit_2, PIN_INACTIVE_STATE);}
+  if ((new_position & B1000) && (binary_output_bit_3)) {digitalWriteEnhanced(binary_output_bit_3,PIN_ACTIVE_STATE);} else {digitalWriteEnhanced(binary_output_bit_3, PIN_INACTIVE_STATE);}
 
   current_antenna_position = new_position; 
   

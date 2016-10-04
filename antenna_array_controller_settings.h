@@ -12,6 +12,9 @@
 #define REMOTE_UNIT_PORT_MAPPED_TO &Serial1
 #define REMOTE_UNIT_PORT_BAUD_RATE 9600 // baud rate for the port interfacing with a remote unit
 
+#define PIN_ACTIVE_STATE HIGH
+#define PIN_INACTIVE_STATE LOW
+
 
 /* ---------------------------- object declarations ----------------------------------------------
 

@@ -32,9 +32,9 @@
 
 //#define DEBUG_MEMORY
 //#define DEBUG_SERIAL
-#define DEBUG_EEPROM
+// #define DEBUG_EEPROM
 //#define DEBUG_DISPLAY
-#define DEBUG_SUBMIT_REQUEST
+// #define DEBUG_SUBMIT_REQUEST
 //#define DEBUG_YAESU
 //#define DEBUG_ANTENNA_POSITION
 //#define DEBUG_ENCODER
