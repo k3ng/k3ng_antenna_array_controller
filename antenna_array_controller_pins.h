@@ -30,3 +30,22 @@
 #define rotary_encoder_pin1 A3 //0
 #define rotary_encoder_pin2 A2 //0
 
+
+// outputs for Comtek ACB-4 unit https://static.dxengineering.com/global/images/instructions/com-acb-80-a.pdf
+//
+//   set to 0 (zero) to disable
+//           
+//                   bit  
+//           -------------------
+//  Degrees      1          0
+//  -------  --------   --------
+//    45     INACTIVE   INACTIVE
+//    135    INACTIVE    ACTIVE
+//    225     ACTIVE    INACTIVE
+//    315     ACTIVE     ACTIVE
+//
+#define comtek_45_135_225_315_bit_0 0
+#define comtek_45_135_225_315_bit_1 0
+
+
+

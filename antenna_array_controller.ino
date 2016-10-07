@@ -21,11 +21,14 @@ Revision History
   1.0.2016100301
     Added PIN_ACTIVE_STATE and PIN_INACTIVE_STATE settings in antenna_array_controller_settings.h
 
+  1.0.2016100601
+    Added optional outputs for Comtek Four Square ACB-4 series in antenna_array_controller_pins.h: comtek_45_135_225_315_bit_0 comtek_45_135_225_315_bit_1
+
 
 */
 
 
-#define CODE_VERSION "1.0.2016100301"
+#define CODE_VERSION "1.0.2016100601"
 
 #include <avr/pgmspace.h>
 #include <EEPROM.h>
@@ -1186,6 +1189,10 @@ void initialize_pins(){
   if (binary_output_bit_2) {pinModeEnhanced(binary_output_bit_2,OUTPUT); digitalWriteEnhanced(binary_output_bit_2,PIN_INACTIVE_STATE);}
   if (binary_output_bit_3) {pinModeEnhanced(binary_output_bit_3,OUTPUT); digitalWriteEnhanced(binary_output_bit_3,PIN_INACTIVE_STATE);}
 
+  if (comtek_45_135_225_315_bit_0) {pinModeEnhanced(comtek_45_135_225_315_bit_0,OUTPUT); digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_INACTIVE_STATE);}
+  if (comtek_45_135_225_315_bit_1) {pinModeEnhanced(comtek_45_135_225_315_bit_1,OUTPUT); digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_INACTIVE_STATE);}
+
+
   submit_request(AZ, REQUEST_AZIMUTH, configuration.last_azimuth);
 }  
 
@@ -1416,6 +1423,14 @@ void change_antenna_position(int new_position){
   if ((new_position & B0010) && (binary_output_bit_1)) {digitalWriteEnhanced(binary_output_bit_1,PIN_ACTIVE_STATE);} else {digitalWriteEnhanced(binary_output_bit_1, PIN_INACTIVE_STATE);}
   if ((new_position & B0100) && (binary_output_bit_2)) {digitalWriteEnhanced(binary_output_bit_2,PIN_ACTIVE_STATE);} else {digitalWriteEnhanced(binary_output_bit_2, PIN_INACTIVE_STATE);}
   if ((new_position & B1000) && (binary_output_bit_3)) {digitalWriteEnhanced(binary_output_bit_3,PIN_ACTIVE_STATE);} else {digitalWriteEnhanced(binary_output_bit_3, PIN_INACTIVE_STATE);}
+
+  if ((comtek_45_135_225_315_bit_0) && (comtek_45_135_225_315_bit_1)){
+    if ((new_position >= 0) && (new_position < 90)) {digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_INACTIVE_STATE);digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_INACTIVE_STATE);}
+    if ((new_position >= 90) && (new_position < 180)) {digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_ACTIVE_STATE);digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_INACTIVE_STATE);}
+    if ((new_position >= 180) && (new_position < 270)) {digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_INACTIVE_STATE);digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_ACTIVE_STATE);}
+    if ((new_position >= 270) && (new_position < 361)) {digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_ACTIVE_STATE);digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_ACTIVE_STATE);}
+  }    
+
 
   current_antenna_position = new_position; 
   
