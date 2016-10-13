@@ -2,15 +2,15 @@
 
 /* main features */
 #define FEATURE_YAESU_EMULATION           // uncomment this for Yaesu GS-232A emulation
-#define FEATURE_ROTARY_ENCODER_CONTROL
+// #define FEATURE_ROTARY_ENCODER_CONTROL
 #define OPTION_ENCODER_ENABLE_PULLUPS     // activate pullups on encoder input lines (with this you don't need to install 1k pullup resistors)
 #define OPTION_ENCODER_HALF_STEP_MODE
 #define OPTION_GS_232B_EMULATION          // uncomment this for GS-232B emulation (also uncomment FEATURE_YAESU_EMULATION above)
 //#define FEATURE_EASYCOM_EMULATION         // Easycom protocol emulation (undefine FEATURE_YAESU_EMULATION above)
-#define FEATURE_LCD_DISPLAY  // Uncomment for *all* LCD displays
+// #define FEATURE_LCD_DISPLAY  // Uncomment for *all* LCD displays
 //#define FEATURE_I2C_LCD    // Uncomment for Adafruit, YourDuino.com, or DFRobot I2C LCD display (also uncomment section in rotator_settings.h object declarations)
 //#define FEATURE_ANCILLARY_PIN_CONTROL
-#define FEATURE_REMOTE_UNIT_INTERFACE  // uncomment to activate remote unit port
+// #define FEATURE_REMOTE_UNIT_INTERFACE  // uncomment to activate remote unit port
   /*
   
   Note:
@@ -36,7 +36,7 @@
 //#define DEBUG_DISPLAY
 // #define DEBUG_SUBMIT_REQUEST
 //#define DEBUG_YAESU
-//#define DEBUG_ANTENNA_POSITION
+// #define DEBUG_ANTENNA_POSITION
 //#define DEBUG_ENCODER
 
 

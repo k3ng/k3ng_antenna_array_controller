@@ -24,11 +24,13 @@ Revision History
   1.0.2016100601
     Added optional outputs for Comtek Four Square ACB-4 series in antenna_array_controller_pins.h: comtek_45_135_225_315_bit_0 comtek_45_135_225_315_bit_1
 
+  1.0.2016101301
+    Fixed bugs with optional outputs for Comtek Four Square ACB-4 series
 
 */
 
 
-#define CODE_VERSION "1.0.2016100601"
+#define CODE_VERSION "1.0.2016101301"
 
 #include <avr/pgmspace.h>
 #include <EEPROM.h>
@@ -52,14 +54,14 @@ Revision History
 #endif
 
 
-#ifdef FEATURE_REMOTE_UNIT_INTERFACE
+//#ifdef FEATURE_REMOTE_UNIT_INTERFACE
 HardwareSerial * remote_unit_port;
-#endif //FEATURE_REMOTE_UNIT_INTERFACE
+//#endif //FEATURE_REMOTE_UNIT_INTERFACE
 
 /* antenna and pin definitions */
 
 const float ranges[] = {0, 180, 360}; // azimuths: 90, 270
-const int pins[] = {0,0};
+const int pins[] = {0,0,0};
 const byte number_of_positions = 2;
 
 // const float ranges[] = {90, 270, 450}; // azimuths: 180, 0
@@ -99,42 +101,42 @@ struct config_t {
 
 
 #ifdef FEATURE_LCD_DISPLAY
-unsigned long last_lcd_update = 0;
-String last_direction_string;
-byte push_lcd_update = 0;
-#define LCD_COLUMNS 16
-//#define LCD_COLUMNS 20
+  unsigned long last_lcd_update = 0;
+  String last_direction_string;
+  byte push_lcd_update = 0;
+  #define LCD_COLUMNS 16
+  //#define LCD_COLUMNS 20
 
-byte lcd_state_row_0 = LCD_UNDEF;
-byte lcd_state_row_1 = LCD_UNDEF;
+  byte lcd_state_row_0 = LCD_UNDEF;
+  byte lcd_state_row_1 = LCD_UNDEF;
 
-#ifdef FEATURE_I2C_LCD
-#define RED 0x1
-#define YELLOW 0x3
-#define GREEN 0x2
-#define TEAL 0x6
-#define BLUE 0x4
-#define VIOLET 0x5
-#define WHITE 0x7
-byte lcdcolor = GREEN;  // default color of I2C LCD display
-#endif //FEATURE_I2C_LCD
+  #ifdef FEATURE_I2C_LCD
+    #define RED 0x1
+    #define YELLOW 0x3
+    #define GREEN 0x2
+    #define TEAL 0x6
+    #define BLUE 0x4
+    #define VIOLET 0x5
+    #define WHITE 0x7
+    byte lcdcolor = GREEN;  // default color of I2C LCD display
+  #endif //FEATURE_I2C_LCD
 #endif //FEATURE_LCD_DISPLAY
 
 #ifdef FEATURE_ROTARY_ENCODER_CONTROL
-#ifdef OPTION_ENCODER_HALF_STEP_MODE      // Use the half-step state table (emits a code at 00 and 11)
-const unsigned char ttable[6][4] = {
-  {0x3 , 0x2, 0x1,  0x0}, {0x23, 0x0, 0x1, 0x0},
-  {0x13, 0x2, 0x0,  0x0}, {0x3 , 0x5, 0x4, 0x0},
-  {0x3 , 0x3, 0x4, 0x10}, {0x3 , 0x5, 0x3, 0x20}
-};
-#else                                      // Use the full-step state table (emits a code at 00 only)
-const unsigned char ttable[7][4] = {
-  {0x0, 0x2, 0x4,  0x0}, {0x3, 0x0, 0x1, 0x10},
-  {0x3, 0x2, 0x0,  0x0}, {0x3, 0x2, 0x1,  0x0},
-  {0x6, 0x0, 0x4,  0x0}, {0x6, 0x5, 0x0, 0x10},
-  {0x6, 0x5, 0x4,  0x0},
-};
-#endif //OPTION_ENCODER_HALF_STEP_MODE 
+  #ifdef OPTION_ENCODER_HALF_STEP_MODE      // Use the half-step state table (emits a code at 00 and 11)
+    const unsigned char ttable[6][4] = {
+      {0x3 , 0x2, 0x1,  0x0}, {0x23, 0x0, 0x1, 0x0},
+      {0x13, 0x2, 0x0,  0x0}, {0x3 , 0x5, 0x4, 0x0},
+      {0x3 , 0x3, 0x4, 0x10}, {0x3 , 0x5, 0x3, 0x20}
+    };
+  #else                                      // Use the full-step state table (emits a code at 00 only)
+    const unsigned char ttable[7][4] = {
+      {0x0, 0x2, 0x4,  0x0}, {0x3, 0x0, 0x1, 0x10},
+      {0x3, 0x2, 0x0,  0x0}, {0x3, 0x2, 0x1,  0x0},
+      {0x6, 0x0, 0x4,  0x0}, {0x6, 0x5, 0x0, 0x10},
+      {0x6, 0x5, 0x4,  0x0},
+    };
+  #endif //OPTION_ENCODER_HALF_STEP_MODE 
 #endif //FEATURE_ROTARY_ENCODER_CONTROL
 
 
@@ -150,11 +152,13 @@ void setup() {
   
   initialize_pins();
 
-  initialize_display();
+  #ifdef FEATURE_LCD_DISPLAY
+    initialize_display();
+  #endif
   
   #ifdef FEATURE_YAESU_EMULATION
-  report_current_azimuth();      // Yaesu - report the azimuth right off the bat without a C command; the Arduino doesn't wake up quick enough
-                                 // to get first C command from HRD and if HRD doesn't see anything it doesn't connect
+    report_current_azimuth();      // Yaesu - report the azimuth right off the bat without a C command; the Arduino doesn't wake up quick enough
+                                   // to get first C command from HRD and if HRD doesn't see anything it doesn't connect
   #endif //FEATURE_YAESU_EMULATION                                 
 
   
@@ -167,11 +171,11 @@ void loop() {
   check_serial();
 
   #ifdef FEATURE_LCD_DISPLAY
-  update_display();
+    update_display();
   #endif
   
   #ifdef FEATURE_ROTARY_ENCODER_CONTROL
-  check_rotary_encoder();
+    check_rotary_encoder();
   #endif
   
   check_buttons();
@@ -1391,31 +1395,68 @@ void submit_request(byte axis, byte request, int parm){
 void update_azimuth(){
   configuration.last_azimuth = azimuth;
   configuration_dirty = 1;
+
+
+  if ((comtek_45_135_225_315_bit_0) && (comtek_45_135_225_315_bit_1)){
+    if ((azimuth >= 0) && (azimuth < 90)) {
+      digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_INACTIVE_STATE);
+      digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_INACTIVE_STATE);
+      #ifdef DEBUG_ANTENNA_POSITION
+        Serial.println(F("update_azimuth: comtek: I I"));
+      #endif //DEBUG_ANTENNA_POSITION
+    }
+    if ((azimuth >= 90) && (azimuth < 180)) {
+      digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_ACTIVE_STATE);
+      digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_INACTIVE_STATE);
+      #ifdef DEBUG_ANTENNA_POSITION
+        Serial.println(F("update_azimuth: comtek: I A"));
+      #endif //DEBUG_ANTENNA_POSITION      
+    }
+    if ((azimuth >= 180) && (azimuth < 270)) {
+      digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_INACTIVE_STATE);
+      digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_ACTIVE_STATE);
+      #ifdef DEBUG_ANTENNA_POSITION
+        Serial.println(F("update_azimuth: comtek: A I"));
+      #endif //DEBUG_ANTENNA_POSITION      
+    }
+    if ((azimuth >= 270) && (azimuth < 361)) {
+      digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_ACTIVE_STATE);
+      digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_ACTIVE_STATE);
+      #ifdef DEBUG_ANTENNA_POSITION
+        Serial.println(F("update_azimuth: comtek: A A"));
+      #endif //DEBUG_ANTENNA_POSITION      
+    }
+  }  
+
 }
 
 //--------------------------------------------------------------
 void change_antenna_position(int new_position){
   
   #ifdef DEBUG_ANTENNA_POSITION
-  Serial.print(F("change_antenna_position: "));
+    Serial.print(F("change_antenna_position: new_position:"));
+    Serial.print(new_position);
+    Serial.print(" azimuth:");
+    Serial.print(azimuth);
+    Serial.print(" ");
   #endif //DEBUG_ANTENNA_POSITION
 
   for (int x = 1;x <= number_of_positions;x++){
     if (x == new_position){
       digitalWriteEnhanced(pins[x-1],PIN_ACTIVE_STATE);
       #ifdef DEBUG_ANTENNA_POSITION
-      Serial.print("[");
-      Serial.print(x);
-      Serial.print("]");
+        Serial.print("[");
+        Serial.print(x);
+        Serial.print("]");
       #endif //DEBUG_ANTENNA_POSITION
     } else {
       digitalWriteEnhanced(pins[x-1],PIN_INACTIVE_STATE);
       #ifdef DEBUG_ANTENNA_POSITION
-      Serial.print(x);
+        Serial.print(x);
       #endif //DEBUG_ANTENNA_POSITION      
     }
     #ifdef DEBUG_ANTENNA_POSITION
-    Serial.print(" ");
+      Serial.print(" ");
     #endif //DEBUG_ANTENNA_POSITION
   }
 
@@ -1424,12 +1465,7 @@ void change_antenna_position(int new_position){
   if ((new_position & B0100) && (binary_output_bit_2)) {digitalWriteEnhanced(binary_output_bit_2,PIN_ACTIVE_STATE);} else {digitalWriteEnhanced(binary_output_bit_2, PIN_INACTIVE_STATE);}
   if ((new_position & B1000) && (binary_output_bit_3)) {digitalWriteEnhanced(binary_output_bit_3,PIN_ACTIVE_STATE);} else {digitalWriteEnhanced(binary_output_bit_3, PIN_INACTIVE_STATE);}
 
-  if ((comtek_45_135_225_315_bit_0) && (comtek_45_135_225_315_bit_1)){
-    if ((new_position >= 0) && (new_position < 90)) {digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_INACTIVE_STATE);digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_INACTIVE_STATE);}
-    if ((new_position >= 90) && (new_position < 180)) {digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_ACTIVE_STATE);digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_INACTIVE_STATE);}
-    if ((new_position >= 180) && (new_position < 270)) {digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_INACTIVE_STATE);digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_ACTIVE_STATE);}
-    if ((new_position >= 270) && (new_position < 361)) {digitalWriteEnhanced(comtek_45_135_225_315_bit_0,PIN_ACTIVE_STATE);digitalWriteEnhanced(comtek_45_135_225_315_bit_1,PIN_ACTIVE_STATE);}
-  }    
+  
 
 
   current_antenna_position = new_position; 
